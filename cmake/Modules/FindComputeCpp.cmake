@@ -37,8 +37,8 @@ set(COMPUTECPP_USER_FLAGS "" CACHE STRING "User flags for compute++")
 separate_arguments(COMPUTECPP_USER_FLAGS)
 mark_as_advanced(COMPUTECPP_USER_FLAGS)
 
-set(COMPUTECPP_BITCODE "spir64" CACHE STRING
-  "Bitcode type to use as SYCL target in compute++")
+set(COMPUTECPP_BITCODE "spirv64" CACHE STRING
+  "Bitcode types to use as SYCL target in compute++.")
 mark_as_advanced(COMPUTECPP_BITCODE)
 
 set(SYCL_LANGUAGE_VERSION "2017" CACHE STRING "SYCL version to use. Defaults to 1.2.1.")
@@ -153,8 +153,12 @@ if(CMAKE_CROSSCOMPILING)
   list(APPEND COMPUTECPP_DEVICE_COMPILER_FLAGS -target ${COMPUTECPP_TARGET_TRIPLE})
 endif()
 
-list(APPEND COMPUTECPP_DEVICE_COMPILER_FLAGS -sycl-target ${COMPUTECPP_BITCODE})
 list(APPEND COMPUTECPP_DEVICE_COMPILER_FLAGS -DSYCL_LANGUAGE_VERSION=${SYCL_LANGUAGE_VERSION})
+
+foreach (bitcode IN ITEMS ${COMPUTECPP_BITCODE})
+  list(APPEND COMPUTECPP_DEVICE_COMPILER_FLAGS -sycl-target ${bitcode})
+endforeach()
+
 message(STATUS "compute++ flags - ${COMPUTECPP_DEVICE_COMPILER_FLAGS}")
 
 include(ComputeCppCompilerChecks)
